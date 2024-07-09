@@ -1,27 +1,20 @@
 import React, { FC, useState } from "react";
-import { searchByTitle } from "../api/queries"; // Ensure this function is correctly imported
-
+import { searchByTitle } from "../api/queries";
+import { useReadingList } from "../Context/ReadingListContext";
 interface Book {
   key: string;
   title: string;
   author_name: string;
 }
 
-
 const Search: FC = () => {
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [searchTermTitle, setSearchTermTitle] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [readingList, setReadingList] = useState<Book[]>([]);
+  const { addToReadingList } = useReadingList();
 
-  const addToReadingList = (book: Book) => {
-    setReadingList((prevList) => [...prevList, book]);
-  };
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -35,6 +28,7 @@ const Search: FC = () => {
       setLoading(false);
     }
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -74,7 +68,7 @@ const Search: FC = () => {
             {searchResults.docs.map((book) => (
               <li key={book.key} className="border-b py-2 flex items-center justify-between">
                 <strong>{book.title}</strong> by {book.author_name}
-                <button className="btn btn-neutral bg-ReddenedEarth border-inherit" onClick={()=> addToReadingList(book)}>
+                <button className="btn btn-neutral bg-ReddenedEarth border-inherit" onClick={() => addToReadingList(book)}>
                   add to reading list
                 </button>
               </li>
@@ -84,14 +78,6 @@ const Search: FC = () => {
           !loading && <p>No results found.</p>
         )}
       </div>
-      <h2>Reading List</h2>
-      <ul>
-        {readingList.map((book) => (
-          <li key={book.key}>
-            {book.title} by {book.author_name}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
